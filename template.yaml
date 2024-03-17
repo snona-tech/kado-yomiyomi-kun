@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Kado Yomi Yomi Kun
+
+Parameters:
+  SlackSigningSecret:
+    Type: String
+    Default: ""
+  SlackBotToken:
+    Type: String
+    Default: ""
+
+Resources:
+  EventsRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: wakeup-lambda
+      ScheduleExpression: rate(5 minutes)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt HandlerFunction.Arn
+          Id: wakeup-lambda
+      EventBusName: default
+  HandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Timeout: 120
+      MemorySize: 512
+      Policies:
+        - AWSLambdaRole
+      FunctionUrlConfig:
+        AuthType: NONE
+      Environment:
+        Variables:
+          SLACK_BOT_TOKEN: !Ref SlackBotToken
+          SLACK_SIGNING_SECRET: !Ref SlackSigningSecret
+          TZ: Asia/Tokyo
+
+Outputs:
+  HandlerFunctionUrl:
+    Value: !GetAtt HandlerFunctionUrl.FunctionUrl
