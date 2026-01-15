@@ -12,7 +12,7 @@ def default_date_range():
     base_period = [
         {
             "start_date": datetime(
-                yyyy if month != 1 else yyyy - 1, month - 1 if month != 1 else month, 21
+                yyyy if month != 1 else yyyy - 1, month - 1 if month != 1 else 12, 21
             ).date(),
             "end_date": datetime(yyyy, month, 20).date(),
         }
